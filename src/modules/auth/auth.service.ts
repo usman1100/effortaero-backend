@@ -8,9 +8,9 @@ export class AuthService {
     constructor(private readonly userService: UserService) {}
 
     async login(email: string, password: string) {
-        const data = await this.userService.findByEmail(email);
+        const {data} = await this.userService.findByEmail(email);
 
-        if (!data.data) return ({
+        if (!data) return ({
             failed:true,
             code: HttpStatus.NOT_FOUND,
             message: "No user found with this email",
@@ -18,11 +18,11 @@ export class AuthService {
         })
 
 
-        if (data.data.password === password) return ({
+        if (data.password === password) return ({
             failed:false,
             code: HttpStatus.OK,
             message: "",
-            data: data.data
+            data
         })
 
 
