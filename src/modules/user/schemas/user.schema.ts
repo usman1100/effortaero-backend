@@ -15,10 +15,11 @@ export class User{
     name: string
 
     @Prop({
+        unique: true,
         required: true,
         type: String,
         maxlength: 40,
-        minlength: 2
+        minlength: 2,
     })
     email: string
 
