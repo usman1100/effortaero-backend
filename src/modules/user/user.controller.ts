@@ -16,7 +16,7 @@ export class UserController {
     async create(@Body() req: UserDTO, @Res() res: Response) {
         const response = await this.userService.create(req);
 
-        if (response.failed) return res.status(HttpStatus.UNPROCESSABLE_ENTITY).json(response)
+        if (response.failed) return res.status(response.code).json(response)
 
         return res.json(response);
     }

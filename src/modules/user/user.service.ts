@@ -1,6 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import { UserDTO } from './schemas/user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 
@@ -20,6 +20,7 @@ export class UserService {
 
             return {
                 failed: false,
+                code:HttpStatus.CREATED,
                 message: '',
                 data: newUser,
             };
@@ -29,6 +30,7 @@ export class UserService {
             if (error?.message.includes('dup key')) {
                 return {
                     failed: true,
+                    code:HttpStatus.CONFLICT,
                     message: 'Email already exists',
                     data: null,
                 };
@@ -36,9 +38,41 @@ export class UserService {
 
             return {
                 failed: true,
+                code:HttpStatus.INTERNAL_SERVER_ERROR,
                 message: 'Something went wrong',
                 data: null,
             };
         }
+    }
+
+
+    async findByID(id:string){
+
+        if (!isValidObjectId(id)){
+            return ({
+                failed: true,
+                code:HttpStatus.UNPROCESSABLE_ENTITY,
+                message: "ID is not valid",
+                data: null
+            })
+        }
+
+        const user = await this.userModel.findById(id);
+        if (!user) {
+            return ({
+                failed: true,
+                code:HttpStatus.NOT_FOUND,
+                message: "User was not found",
+                data: user
+            })
+        }
+
+
+        return ({
+            failed: false,
+            code:HttpStatus.OK,
+            message: "",
+            data: user
+        })
     }
 }
