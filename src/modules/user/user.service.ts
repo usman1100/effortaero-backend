@@ -20,7 +20,7 @@ export class UserService {
 
             return {
                 failed: false,
-                code:HttpStatus.CREATED,
+                code: HttpStatus.CREATED,
                 message: '',
                 data: newUser,
             };
@@ -30,7 +30,7 @@ export class UserService {
             if (error?.message.includes('dup key')) {
                 return {
                     failed: true,
-                    code:HttpStatus.CONFLICT,
+                    code: HttpStatus.CONFLICT,
                     message: 'Email already exists',
                     data: null,
                 };
@@ -38,41 +38,59 @@ export class UserService {
 
             return {
                 failed: true,
-                code:HttpStatus.INTERNAL_SERVER_ERROR,
+                code: HttpStatus.INTERNAL_SERVER_ERROR,
                 message: 'Something went wrong',
                 data: null,
             };
         }
     }
 
-
-    async findByID(id:string){
-
-        if (!isValidObjectId(id)){
-            return ({
+    async findByID(id: string) {
+        if (!isValidObjectId(id)) {
+            return {
                 failed: true,
-                code:HttpStatus.UNPROCESSABLE_ENTITY,
-                message: "ID is not valid",
-                data: null
-            })
+                code: HttpStatus.UNPROCESSABLE_ENTITY,
+                message: 'ID is not valid',
+                data: null,
+            };
         }
 
         const user = await this.userModel.findById(id);
         if (!user) {
-            return ({
+            return {
                 failed: true,
-                code:HttpStatus.NOT_FOUND,
-                message: "User was not found",
-                data: user
-            })
+                code: HttpStatus.NOT_FOUND,
+                message: 'User was not found',
+                data: user,
+            };
         }
 
-
-        return ({
+        return {
             failed: false,
-            code:HttpStatus.OK,
-            message: "",
-            data: user
-        })
+            code: HttpStatus.OK,
+            message: '',
+            data: user,
+        };
+    }
+
+    async findByEmail(email: string) {
+        const user = await this.userModel.findOne({ email });
+        
+        
+        if (!user) {
+            return {
+                failed: true,
+                code: HttpStatus.NOT_FOUND,
+                message: 'User was not found',
+                data: user,
+            };
+        }
+
+        return {
+            failed: false,
+            code: HttpStatus.OK,
+            message: '',
+            data: user,
+        };
     }
 }

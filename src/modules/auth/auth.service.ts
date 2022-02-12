@@ -1,15 +1,41 @@
-import { Injectable, Res } from '@nestjs/common';
+import { HttpStatus, Injectable, Res } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { Response } from 'express';
+import { UserDTO } from '../user/schemas/user.dto';
 
 @Injectable()
 export class AuthService {
     constructor(private readonly userService: UserService) {}
 
-    async login() {
-        const data = await this.userService.findByID(
-            '62078bdfba423a6e33550fe1',
-        );
+    async login(email: string, password: string) {
+        const data = await this.userService.findByEmail(email);
+
+        if (!data.data) return ({
+            failed:true,
+            code: HttpStatus.NOT_FOUND,
+            message: "No user found with this email",
+            data: null
+        })
+
+
+        if (data.data.password === password) return ({
+            failed:false,
+            code: HttpStatus.OK,
+            message: "",
+            data: data.data
+        })
+
+
+        return ({
+            failed:true,
+            code: HttpStatus.UNAUTHORIZED,
+            message: "Wrong password",
+            data: null
+        })
+    }
+
+    async signUp(userInfo: UserDTO) {
+        const data = await this.userService.create(userInfo);
         return data;
     }
 }
