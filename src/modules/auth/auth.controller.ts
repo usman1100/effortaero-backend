@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
 import { UserDTO } from '../user/schemas/user.dto';
 import { AuthService } from './auth.service';
@@ -14,14 +14,12 @@ export class AuthController {
             loginCred.email,
             loginCred.password,
         );
-        if (data.failed) return res.status(data.code).json(data);
-        return res.json(data);
+        return res.status(data.code).json(data);
     }
 
     @Post('signup')
     async signUp(@Body() userInfo: UserDTO, @Res() res: Response) {
         const data = await this.authService.signUp(userInfo);
-        if (data.failed) return res.status(data.code).json(data);
-        return res.json(data);
+        return res.status(data.code).json(data);
     }
 }
