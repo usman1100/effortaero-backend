@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { UserDTO } from '../user/schemas/user.dto';
 import { JwtService } from '@nestjs/jwt';
+import { hash, compareSync } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
@@ -21,7 +22,7 @@ export class AuthService {
                 data: null,
             };
 
-        if (data.password !== password) {
+        if (compareSync(data.password, password)) {
             return {
                 failed: true,
                 code: HttpStatus.UNAUTHORIZED,
@@ -47,7 +48,12 @@ export class AuthService {
     }
 
     async signUp(userInfo: UserDTO) {
-        const data = await this.userService.create(userInfo);
+        const hashedPassword = await hash(userInfo.password, 10);
+
+        const data = await this.userService.create({
+            ...userInfo,
+            password: hashedPassword,
+        });
         return data;
     }
 }
