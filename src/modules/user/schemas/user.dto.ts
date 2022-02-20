@@ -1,11 +1,18 @@
 import {
     IsEmail,
+    IsEnum,
     IsNotEmpty,
     IsString,
     Matches,
     MaxLength,
     MinLength,
 } from 'class-validator';
+
+export enum Role {
+    ADMIN = 'admin',
+    USER = 'user',
+    OWNER = 'owner',
+}
 
 export class UserDTO {
     @IsString()
@@ -25,6 +32,9 @@ export class UserDTO {
     @IsNotEmpty()
     password: string;
 
-    @IsNotEmpty()
-    role: string;
+    @IsEnum(['developer', 'manager', 'ownder'], {
+        message:
+            "Role must be one of the following: 'developer', 'manager', 'owner'",
+    })
+    role: Role;
 }
