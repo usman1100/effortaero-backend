@@ -11,7 +11,32 @@ export class UserService {
     ) {}
 
     async getAll() {
-        return await this.userModel.find();
+        try {
+            const users = await this.userModel.find();
+
+            if (users.length === 0) {
+                return {
+                    failed: true,
+                    code: HttpStatus.NOT_FOUND,
+                    message: 'Users were not found',
+                    data: users,
+                };
+            }
+
+            return {
+                failed: false,
+                code: HttpStatus.OK,
+                message: '',
+                data: users,
+            };
+        } catch (error) {
+            return {
+                failed: true,
+                code: HttpStatus.INTERNAL_SERVER_ERROR,
+                message: 'Something went wrong',
+                data: null,
+            };
+        }
     }
 
     async create(data: UserDTO) {
@@ -75,8 +100,7 @@ export class UserService {
 
     async findByEmail(email: string) {
         const user = await this.userModel.findOne({ email });
-        
-        
+
         if (!user) {
             return {
                 failed: true,

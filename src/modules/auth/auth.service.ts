@@ -1,37 +1,49 @@
-import { HttpStatus, Injectable, Res } from '@nestjs/common';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { Response } from 'express';
 import { UserDTO } from '../user/schemas/user.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly userService: UserService) {}
+    constructor(
+        private readonly userService: UserService,
+        private readonly jwtService: JwtService,
+    ) {}
 
     async login(email: string, password: string) {
-        const {data} = await this.userService.findByEmail(email);
+        const { data } = await this.userService.findByEmail(email);
 
-        if (!data) return ({
-            failed:true,
-            code: HttpStatus.NOT_FOUND,
-            message: "No user found with this email",
-            data: null
-        })
+        if (!data)
+            return {
+                failed: true,
+                code: HttpStatus.NOT_FOUND,
+                message: 'No user found with this email',
+                data: null,
+            };
 
+        if (data.password !== password) {
+            return {
+                failed: true,
+                code: HttpStatus.UNAUTHORIZED,
+                message: 'Wrong password',
+                data: null,
+            };
+        }
 
-        if (data.password === password) return ({
-            failed:false,
+        const payload = {
+            id: data.id,
+            email: data.email,
+        };
+
+        const token = this.jwtService.sign(payload);
+
+        return {
+            failed: false,
             code: HttpStatus.OK,
-            message: "",
-            data
-        })
-
-
-        return ({
-            failed:true,
-            code: HttpStatus.UNAUTHORIZED,
-            message: "Wrong password",
-            data: null
-        })
+            message: '',
+            data,
+            token,
+        };
     }
 
     async signUp(userInfo: UserDTO) {
