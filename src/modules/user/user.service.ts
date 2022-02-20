@@ -1,6 +1,7 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
+import { generateInternalServerError } from 'src/utils';
 import { UserDTO } from './schemas/user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 
@@ -41,6 +42,19 @@ export class UserService {
 
     async create(data: UserDTO) {
         try {
+            const userExists = await this.userModel.findOne({
+                email: data.email,
+            });
+
+            if (userExists) {
+                return {
+                    failed: true,
+                    code: HttpStatus.CONFLICT,
+                    message: 'This email is already registered',
+                    data: null,
+                };
+            }
+
             const newUser = await this.userModel.create(data);
 
             return {
@@ -50,23 +64,7 @@ export class UserService {
                 data: newUser,
             };
         } catch (e: any) {
-            const error: Error = e;
-
-            if (error?.message.includes('dup key')) {
-                return {
-                    failed: true,
-                    code: HttpStatus.CONFLICT,
-                    message: 'Email already exists',
-                    data: null,
-                };
-            }
-
-            return {
-                failed: true,
-                code: HttpStatus.INTERNAL_SERVER_ERROR,
-                message: 'Something went wrong',
-                data: null,
-            };
+            return generateInternalServerError(e);
         }
     }
 
