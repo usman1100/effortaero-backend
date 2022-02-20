@@ -7,12 +7,7 @@ import {
     MaxLength,
     MinLength,
 } from 'class-validator';
-
-export enum Role {
-    ADMIN = 'admin',
-    USER = 'user',
-    OWNER = 'owner',
-}
+import { Role } from 'src/modules/auth/roles/role.type';
 
 export class UserDTO {
     @IsString()
@@ -32,7 +27,7 @@ export class UserDTO {
     @IsNotEmpty()
     password: string;
 
-    @IsEnum(['developer', 'manager', 'ownder'], {
+    @IsEnum([Role.DEVELOER, Role.MANAGER, Role.OWNER], {
         message:
             "Role must be one of the following: 'developer', 'manager', 'owner'",
     })
