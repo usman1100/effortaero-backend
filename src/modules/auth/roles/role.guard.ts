@@ -10,7 +10,7 @@ const matchRoles = (userRole: Role, requiredRoles: Role[]) => {
 export class RolesGuard implements CanActivate {
     constructor(private reflector: Reflector) {}
 
-    async canActivate(context: ExecutionContext): Promise<boolean> {
+    canActivate(context: ExecutionContext): boolean {
         const roles = this.reflector.getAllAndOverride<Role[]>('roles', [
             context.getHandler(),
             context.getClass(),
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
 
         if (!roles) return true;
 
-        const req = await context.switchToHttp().getRequest();
+        const req = context.switchToHttp().getRequest();
 
         const userRole = req?.user?.role;
 
