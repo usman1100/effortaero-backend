@@ -1,9 +1,11 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
+import { Actor, ActorSchema } from '../subschemas/actor';
+import { UseCase, UseCaseSchema } from '../subschemas/usecase';
 
 export type ProjectDocument = Project & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class Project {
     // Fields
     // name, createdBy, developers[], actors[], useCases[],
@@ -22,6 +24,26 @@ export class Project {
         required: true,
     })
     createdBy: string;
+
+    @Prop({
+        type: MongooseSchema.Types.ObjectId,
+        ref: 'Organization',
+        required: true,
+    })
+    organization: string;
+
+    @Prop({
+        type: [ActorSchema],
+        default: [],
+    })
+    actors: Actor[];
+
+    // use cases
+    @Prop({
+        type: [UseCaseSchema],
+        default: [],
+    })
+    useCases: UseCase[];
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);
