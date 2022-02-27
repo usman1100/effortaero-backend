@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export enum UseCaseComplexity {
     Simple = 'Simple',
@@ -39,3 +39,5 @@ export class UseCase {
     })
     createdBy: string;
 }
+
+export const UseCaseSchema = SchemaFactory.createForClass(UseCase);

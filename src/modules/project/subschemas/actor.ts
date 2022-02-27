@@ -1,4 +1,4 @@
-import { Prop, Schema } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export enum ActorComplexity {
     Simple = 'Simple',
@@ -37,3 +37,5 @@ export class Actor {
     })
     createdBy: string;
 }
+
+export const ActorSchema = SchemaFactory.createForClass(Actor);
