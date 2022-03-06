@@ -2,14 +2,17 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
 import { generateInternalServerError } from 'src/utils';
+import { BaseService } from '../base/base.service';
 import { UserDTO } from './schemas/user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
-export class UserService {
+export class UserService extends BaseService<UserDocument> {
     constructor(
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
-    ) {}
+    ) {
+        super(userModel);
+    }
 
     async getAll() {
         try {
@@ -40,7 +43,7 @@ export class UserService {
         }
     }
 
-    async create(data: UserDTO) {
+    async createUser(data: UserDTO) {
         try {
             const userExists = await this.userModel.findOne({
                 email: data.email,
