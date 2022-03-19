@@ -22,3 +22,23 @@ export const generateInternalServerError = (e: any): ResponseType => {
         data: null,
     };
 };
+
+export const generateAlreadyExistError = (message?: string): ResponseType => {
+    return {
+        failed: true,
+        code: HttpStatus.CONFLICT,
+        message: message || 'Already Exists',
+        data: null,
+    };
+};
+
+export const generateSuccessResponse = (
+    data: any,
+    code: number,
+    message?: string,
+): ResponseType => ({
+    failed: false,
+    code,
+    message,
+    data,
+});
