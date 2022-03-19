@@ -12,7 +12,7 @@ export class ProjectController {
     constructor(private readonly projectService: ProjectService) {}
 
     @Post('create')
-    @RolesAllowed(Role.MANAGER)
+    @RolesAllowed(Role.OWNER)
     async create(@Req() req, @Res() res: Response) {
         const { name } = req.body;
 

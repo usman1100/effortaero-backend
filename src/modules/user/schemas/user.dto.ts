@@ -27,9 +27,8 @@ export class UserDTO {
     @IsNotEmpty()
     password: string;
 
-    @IsEnum([Role.DEVELOER, Role.MANAGER, Role.OWNER], {
-        message:
-            "Role must be one of the following: 'developer', 'manager', 'owner'",
+    @IsEnum([Role.OWNER, Role.USER, Role.OWNER], {
+        message: "Role must be one of the following: 'OWNER', 'USER',",
     })
     role: Role;
 }

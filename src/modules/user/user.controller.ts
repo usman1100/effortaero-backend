@@ -12,7 +12,7 @@ export class UserController {
     constructor(private readonly userService: UserService) {}
 
     @Get('search')
-    @RolesAllowed(Role.MANAGER, Role.OWNER)
+    @RolesAllowed(Role.OWNER)
     async getAll(@Res() res: Response) {
         const response = await this.userService.getAll();
         return res.status(response.code).json(response);
