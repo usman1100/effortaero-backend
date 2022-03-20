@@ -41,17 +41,8 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         }
     }
 
-    async addMember(memberInfo: CreateMemberDTO) {
-        try {
-            const response = await this.memberService.createNew(memberInfo);
-
-            if (response.failed) return response;
-
-            return generateSuccessResponse(
-                response.data,
-                HttpStatus.CREATED,
-                '',
-            );
+    async addMember(){
+            // TODO
         } catch (e) {
             return generateInternalServerError(e);
         }
