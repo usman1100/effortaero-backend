@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { UserDTO } from '../user/schemas/user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { hash, compareSync } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 import { generateInternalServerError, generateResponse } from 'src/utils';
 
 @Injectable()
@@ -14,40 +14,37 @@ export class AuthService {
 
     async login(email: string, password: string) {
         try {
-            const { data } = await this.userService.findByEmail(email);
+            const { data: user } = await this.userService.findByEmail(email);
 
-            if (!data)
+            if (!user)
                 return {
                     failed: true,
                     code: HttpStatus.NOT_FOUND,
                     message: 'No user found with this email',
-                    data: null,
+                    user: null,
                 };
 
-            if (compareSync(data.password, password)) {
+            if (await compare(user.password, password)) {
                 return {
                     failed: true,
                     code: HttpStatus.UNAUTHORIZED,
                     message: 'Wrong password',
-                    data: null,
+                    user: null,
                 };
             }
 
             const payload = {
-                id: data.id,
-                email: data.email,
-                role: data.role,
+                id: user.id,
+                email: user.email,
+                role: user.role,
             };
 
             const token = this.jwtService.sign(payload);
 
-            return {
-                failed: false,
-                code: HttpStatus.OK,
-                message: '',
-                data,
+            return generateResponse(false, HttpStatus.OK, '', {
                 token,
-            };
+                user: user,
+            });
         } catch (e) {
             return generateInternalServerError(e);
         }
@@ -70,11 +67,11 @@ export class AuthService {
 
             const hashedPassword = await hash(userInfo.password, 10);
 
-            const data = await this.userService.create({
+            const user = await this.userService.create({
                 ...userInfo,
                 password: hashedPassword,
             });
-            return generateResponse(false, HttpStatus.CREATED, '', data);
+            return generateResponse(false, HttpStatus.CREATED, '', user);
         } catch (e) {
             return generateInternalServerError(e);
         }

@@ -16,7 +16,10 @@ export class OrganizationController {
         const id = req?.user?.id;
         const { name } = req.body;
 
-        const response = await this.organizationService.create({ id, name });
+        const response = await this.organizationService.createNew({
+            createdBy: id,
+            name,
+        });
         return res.status(response.code).json(response);
     }
 }

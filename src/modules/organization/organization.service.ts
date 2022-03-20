@@ -1,23 +1,36 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { generateResponse } from 'src/utils';
+import { generateAlreadyExistError, generateSuccessResponse } from 'src/utils';
+import { BaseService } from '../base/base.service';
 import {
     Organization,
     OrganizationDocument,
 } from './schemas/organization.schema';
+import { CreateOrganizationDTO } from './organization.dto';
 
 @Injectable()
-export class OrganizationService {
+export class OrganizationService extends BaseService<OrganizationDocument> {
     constructor(
         @InjectModel(Organization.name)
         private readonly orgModel: Model<OrganizationDocument>,
-    ) {}
-    async create(body: any) {
-        const newOrg = await this.orgModel.create({
-            createdBy: body?.id,
-            name: body?.name,
-        });
-        return generateResponse(false, HttpStatus.CREATED, '', newOrg);
+    ) {
+        super(orgModel);
+    }
+
+    async createNew(orgInfo: CreateOrganizationDTO) {
+        try {
+            const orgExists = await this.findOne({ name: orgInfo.name });
+
+            if (orgExists) {
+                return generateAlreadyExistError('Organization already exists');
+            }
+
+            const newOrg = await this.create(orgInfo);
+
+            return generateSuccessResponse(newOrg, HttpStatus.CREATED, '');
+        } catch (e) {
+            return generateAlreadyExistError(e);
+        }
     }
 }
