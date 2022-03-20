@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { MemberModule } from '../members/members.module';
 import { OrganizationController } from './organization.controller';
 import { OrganizationService } from './organization.service';
 import {
@@ -12,6 +13,7 @@ import {
         MongooseModule.forFeature([
             { name: Organization.name, schema: OrganizationSchema },
         ]),
+        MemberModule,
     ],
     exports: [OrganizationService, OrganizationModule],
     providers: [OrganizationService],

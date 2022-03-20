@@ -1,9 +1,10 @@
-import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesAllowed } from '../auth/roles/role.decorator';
 import { RolesGuard } from '../auth/roles/role.guard';
 import { Role } from '../auth/roles/role.type';
+import { CreateMemberDTO } from '../members/members.dto';
 import { OrganizationService } from './organization.service';
 
 @Controller('organizations')
@@ -20,6 +21,13 @@ export class OrganizationController {
             createdBy: id,
             name,
         });
+        return res.status(response.code).json(response);
+    }
+
+    @Post('addMember')
+    @RolesAllowed(Role.OWNER)
+    async addMember(@Body() memberInfo: CreateMemberDTO, @Res() res: Response) {
+        const response = await this.organizationService.addMember(memberInfo);
         return res.status(response.code).json(response);
     }
 }
