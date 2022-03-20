@@ -14,6 +14,7 @@ import {
 import { CreateOrganizationDTO } from './organization.dto';
 import { MemberService } from '../members/members.service';
 import { CreateMemberDTO } from '../members/members.dto';
+import { RequestService } from '../requests/requests.service';
 
 @Injectable()
 export class OrganizationService extends BaseService<OrganizationDocument> {
@@ -21,6 +22,7 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         @InjectModel(Organization.name)
         private readonly orgModel: Model<OrganizationDocument>,
         private readonly memberService: MemberService,
+        private readonly requestService: RequestService,
     ) {
         super(orgModel);
     }
@@ -41,8 +43,15 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         }
     }
 
-    async addMember(){
-            // TODO
+    async test() {
+        try {
+            const newRequest = await this.requestService.create({
+                sender: '5e9c9c9c9c9c9c9c9c9c9c9c',
+                receiver: '5e9c9c9c9c9c9c9c9c9c9c9c',
+                orgID: '5e9c9c9c9c9c9c9c9c9c9c9c',
+                status: 'pending',
+            });
+            return generateSuccessResponse(newRequest, HttpStatus.CREATED, '');
         } catch (e) {
             return generateInternalServerError(e);
         }
