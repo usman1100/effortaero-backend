@@ -2,7 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { UserDTO } from '../user/schemas/user.dto';
 import { JwtService } from '@nestjs/jwt';
-import { hash, compare } from 'bcrypt';
+import { hash, compareSync } from 'bcrypt';
 import { generateInternalServerError, generateResponse } from 'src/utils';
 
 @Injectable()
@@ -24,7 +24,9 @@ export class AuthService {
                     user: null,
                 };
 
-            if (await compare(user.password, password)) {
+            const passwordMatched = compareSync(password, user.password);
+
+            if (!passwordMatched) {
                 return {
                     failed: true,
                     code: HttpStatus.UNAUTHORIZED,
