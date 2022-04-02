@@ -1,0 +1,17 @@
+version: '3'
+services:
+
+  mongodb:
+      image: mongo
+      ports:
+        - "27017:27017"
+      volumes:
+        - ./data:/data/db
+
+  api:
+    build: ./
+    container_name: ea_api
+    ports:
+      - "3000:3000"
+
+  

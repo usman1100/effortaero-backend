@@ -17,7 +17,7 @@ export class AuthController {
         return res.status(data.code).json(data);
     }
 
-    @Post('signup')
+    @Post('register')
     async signUp(@Body() userInfo: UserDTO, @Res() res: Response) {
         const data = await this.authService.signUp(userInfo);
         return res.status(data.code).json(data);
