@@ -45,12 +45,6 @@ export class MemberService extends BaseService<Member> {
                 return generateNotFoundError('Organization not found');
             }
 
-            if (members.length === 0) {
-                return generateNotFoundError(
-                    'User is not a member of any organization',
-                );
-            }
-
             return generateSuccessResponse(members);
         } catch (e) {
             return generateInternalServerError(e);

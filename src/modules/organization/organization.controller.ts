@@ -26,8 +26,6 @@ export class OrganizationController {
     @Get('my')
     @RolesAllowed(Role.USER, Role.OWNER)
     async my(@Req() req, @Res() res: Response) {
-        console.log(req.user);
-
         const response = await this.organizationService.myOrganization(
             req?.user?.id,
         );
