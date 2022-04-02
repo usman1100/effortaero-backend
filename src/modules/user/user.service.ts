@@ -1,7 +1,11 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
-import { generateInternalServerError } from 'src/utils';
+import {
+    generateInternalServerError,
+    generateNotFoundError,
+    generateSuccessResponse,
+} from 'src/utils';
 import { BaseService } from '../base/base.service';
 import { UserDTO } from './schemas/user.dto';
 import { User, UserDocument } from './schemas/user.schema';
@@ -12,6 +16,19 @@ export class UserService extends BaseService<UserDocument> {
         @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     ) {
         super(userModel);
+    }
+
+    async myInfo(userID: string) {
+        try {
+            const userInfo = await this.userModel.findById(userID);
+
+            if (!userInfo)
+                return generateNotFoundError('No user with this ID exists');
+
+            return generateSuccessResponse(userInfo);
+        } catch (e) {
+            return generateInternalServerError(e);
+        }
     }
 
     async getAll() {
