@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { MemberRoles } from './members.types';
+import { Role } from '../auth/roles/role.type';
 
 @Schema({ timestamps: true })
 export class Member {
@@ -24,7 +24,7 @@ export class Member {
     @Prop({
         type: String,
         required: true,
-        enum: MemberRoles,
+        enum: Role,
     })
     role: string;
 }

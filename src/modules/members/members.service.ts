@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import {
     generateAlreadyExistError,
     generateInternalServerError,
+    generateNotFoundError,
     generateSuccessResponse,
 } from 'src/utils';
 import { BaseService } from '../base/base.service';
@@ -31,6 +32,26 @@ export class MemberService extends BaseService<Member> {
             const newMember = await this.memberModel.create(memberInfo);
 
             return generateSuccessResponse(newMember, HttpStatus.CREATED);
+        } catch (e) {
+            return generateInternalServerError(e);
+        }
+    }
+
+    async getUserOrganizations(userID: string) {
+        try {
+            const members = await this.memberModel.find({ userID });
+
+            if (!members) {
+                return generateNotFoundError('Organization not found');
+            }
+
+            if (members.length === 0) {
+                return generateNotFoundError(
+                    'User is not a member of any organization',
+                );
+            }
+
+            return generateSuccessResponse(members);
         } catch (e) {
             return generateInternalServerError(e);
         }

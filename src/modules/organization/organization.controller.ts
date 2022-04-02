@@ -1,4 +1,4 @@
-import { Controller, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesAllowed } from '../auth/roles/role.decorator';
@@ -23,9 +23,14 @@ export class OrganizationController {
         return res.status(response.code).json(response);
     }
 
-    @Post('test')
-    async test(@Res() res: Response) {
-        const response = await this.organizationService.test();
+    @Get('my')
+    @RolesAllowed(Role.USER, Role.OWNER)
+    async my(@Req() req, @Res() res: Response) {
+        console.log(req.user);
+
+        const response = await this.organizationService.myOrganization(
+            req?.user?.id,
+        );
         return res.status(response.code).json(response);
     }
 }

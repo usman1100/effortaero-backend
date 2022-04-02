@@ -34,11 +34,20 @@ export const generateAlreadyExistError = (message?: string): ResponseType => {
 
 export const generateSuccessResponse = (
     data: any,
-    code: number,
+    code?: number,
     message?: string,
 ): ResponseType => ({
     failed: false,
-    code,
-    message,
+    code: code || HttpStatus.OK,
+    message: message || 'Success',
     data,
 });
+
+export const generateNotFoundError = (message?: string): ResponseType => {
+    return {
+        failed: true,
+        code: HttpStatus.NOT_FOUND,
+        message: message || 'Not Found',
+        data: null,
+    };
+};

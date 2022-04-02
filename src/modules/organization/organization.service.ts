@@ -7,14 +7,13 @@ import {
     generateSuccessResponse,
 } from 'src/utils';
 import { BaseService } from '../base/base.service';
+import { MemberService } from '../members/members.service';
+import { RequestService } from '../requests/requests.service';
+import { CreateOrganizationDTO } from './organization.dto';
 import {
     Organization,
     OrganizationDocument,
 } from './schemas/organization.schema';
-import { CreateOrganizationDTO } from './organization.dto';
-import { MemberService } from '../members/members.service';
-import { CreateMemberDTO } from '../members/members.dto';
-import { RequestService } from '../requests/requests.service';
 
 @Injectable()
 export class OrganizationService extends BaseService<OrganizationDocument> {
@@ -43,15 +42,10 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         }
     }
 
-    async test() {
+    async myOrganization(userID: string) {
         try {
-            const newRequest = await this.requestService.create({
-                sender: '5e9c9c9c9c9c9c9c9c9c9c9c',
-                receiver: '5e9c9c9c9c9c9c9c9c9c9c9c',
-                orgID: '5e9c9c9c9c9c9c9c9c9c9c9c',
-                status: 'pending',
-            });
-            return generateSuccessResponse(newRequest, HttpStatus.CREATED, '');
+            const orgs = this.memberService.getUserOrganizations(userID);
+            return orgs;
         } catch (e) {
             return generateInternalServerError(e);
         }
