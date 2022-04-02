@@ -6,6 +6,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProjectModule } from './modules/project/project.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { MemberModule } from './modules/members/members.module';
+import { JwtModule } from '@nestjs/jwt';
+import jwtConstants from './constants/jwtConstants';
 
 @Module({
     imports: [
@@ -20,6 +22,11 @@ import { MemberModule } from './modules/members/members.module';
         OrganizationModule,
 
         MemberModule,
+
+        JwtModule.register({
+            secret: jwtConstants.secret,
+            signOptions: { expiresIn: '60s' },
+        }),
     ],
     controllers: [AppController],
     providers: [],
