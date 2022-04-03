@@ -31,4 +31,14 @@ export class OrganizationController {
         );
         return res.status(response.code).json(response);
     }
+
+    @RolesAllowed(Role.OWNER)
+    @Get('created-orgs')
+    async getCreatedOrgs(@Req() req, @Res() res: Response) {
+        const userID = req?.user?.id;
+        const response = await this.organizationService.getCreatedOrganizations(
+            userID,
+        );
+        return res.status(response.code).json(response);
+    }
 }

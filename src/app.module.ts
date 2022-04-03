@@ -22,11 +22,6 @@ import jwtConstants from './constants/jwtConstants';
         OrganizationModule,
 
         MemberModule,
-
-        JwtModule.register({
-            secret: jwtConstants.secret,
-            signOptions: { expiresIn: '60s' },
-        }),
     ],
     controllers: [AppController],
     providers: [],

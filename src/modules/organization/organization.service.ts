@@ -42,6 +42,15 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         }
     }
 
+    async getCreatedOrganizations(userID: string) {
+        try {
+            const orgs = await this.find({ createdBy: userID });
+            return generateSuccessResponse(orgs);
+        } catch (e) {
+            return generateInternalServerError(e);
+        }
+    }
+
     async myOrganization(userID: string) {
         try {
             const orgs = this.memberService.getUserOrganizations(userID);
