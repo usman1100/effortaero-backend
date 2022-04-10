@@ -19,20 +19,6 @@ export class Organization {
         required: true,
     })
     createdBy: string;
-
-    @Prop({
-        type: [MongooseSchema.Types.ObjectId],
-        ref: 'User',
-        default: [],
-    })
-    members: string[];
-
-    @Prop({
-        type: [MongooseSchema.Types.ObjectId],
-        ref: 'Project',
-        default: [],
-    })
-    projects: string[];
 }
 
 export const OrganizationSchema = SchemaFactory.createForClass(Organization);
