@@ -51,3 +51,14 @@ export const generateNotFoundError = (message?: string): ResponseType => {
         data: null,
     };
 };
+
+export const generateUnprocessableEntityError = (
+    message?: string,
+): ResponseType => {
+    return {
+        failed: true,
+        code: HttpStatus.UNPROCESSABLE_ENTITY,
+        message: message || 'Unprocessable Entity',
+        data: null,
+    };
+};
