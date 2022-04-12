@@ -1,5 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { ResponseType } from 'src/types';
+import { Types } from 'mongoose';
 
 export const generateResponse = (
     failed: boolean,
@@ -61,4 +62,13 @@ export const generateUnprocessableEntityError = (
         message: message || 'Unprocessable Entity',
         data: null,
     };
+};
+
+export const compareMongoID = (mongoID: string, id: string) => {
+    const compareID = new Types.ObjectId(id);
+    console.log(compareID);
+    console.log(mongoID);
+    console.log(id);
+
+    return compareID.equals(mongoID);
 };

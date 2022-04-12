@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { isValidObjectId, Model } from 'mongoose';
 import {
+    compareMongoID,
     generateAlreadyExistError,
     generateInternalServerError,
     generateNotFoundError,
@@ -84,6 +85,12 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
             const org = await this.findOne({ _id: orgID });
             if (!org) {
                 return generateNotFoundError('Organization not found');
+            }
+
+            if (compareMongoID(org.createdBy, userID)) {
+                return generateUnprocessableEntityError(
+                    'You cannot add yourself to your own organization',
+                );
             }
 
             const member = await this.memberService.addMember(orgID, userID);
