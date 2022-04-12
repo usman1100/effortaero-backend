@@ -18,7 +18,7 @@ export const generateInternalServerError = (e: any): ResponseType => {
     return {
         failed: true,
         code: HttpStatus.INTERNAL_SERVER_ERROR,
-        message: error.message,
+        message: error.message || 'Internal server error',
         data: null,
     };
 };

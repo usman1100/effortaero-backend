@@ -37,6 +37,22 @@ export class MemberService extends BaseService<Member> {
         }
     }
 
+    async getByOrg(orgID: string) {
+        try {
+            const members = await this.memberModel
+                .find({ orgID })
+                .populate('userID');
+
+            if (!members) {
+                return generateNotFoundError('Organization not found');
+            }
+
+            return generateSuccessResponse(members);
+        } catch (e) {
+            return generateInternalServerError(e);
+        }
+    }
+
     async getUserOrganizations(userID: string) {
         try {
             const members = await this.memberModel.find({ userID });
@@ -46,6 +62,27 @@ export class MemberService extends BaseService<Member> {
             }
 
             return generateSuccessResponse(members);
+        } catch (e) {
+            return generateInternalServerError(e);
+        }
+    }
+
+    async addMember(orgID: string, userID: string) {
+        try {
+            const exists = await this.memberModel.findOne({
+                orgID,
+                userID,
+            });
+            if (exists) {
+                return generateAlreadyExistError('User is already a member');
+            }
+
+            const newMember = await this.memberModel.create({
+                orgID,
+                userID,
+            });
+
+            return generateSuccessResponse(newMember, HttpStatus.CREATED);
         } catch (e) {
             return generateInternalServerError(e);
         }

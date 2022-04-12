@@ -1,9 +1,18 @@
-import { Controller, Get, Post, Req, Res, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesAllowed } from '../auth/roles/role.decorator';
 import { RolesGuard } from '../auth/roles/role.guard';
 import { Role } from '../auth/roles/role.type';
+import { AddMemberDTO } from './organization.dto';
 import { OrganizationService } from './organization.service';
 
 @Controller('organizations')
@@ -39,6 +48,20 @@ export class OrganizationController {
         const response = await this.organizationService.getCreatedOrganizations(
             userID,
         );
+        return res.status(response.code).json(response);
+    }
+
+    @RolesAllowed(Role.OWNER)
+    @Post('addmember')
+    async addMember(
+        @Body() { orgID, userID }: AddMemberDTO,
+        @Res() res: Response,
+    ) {
+        const response = await this.organizationService.addMember(
+            orgID,
+            userID,
+        );
+
         return res.status(response.code).json(response);
     }
 }

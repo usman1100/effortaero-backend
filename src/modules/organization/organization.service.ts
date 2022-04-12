@@ -1,10 +1,12 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { isValidObjectId, Model } from 'mongoose';
 import {
     generateAlreadyExistError,
     generateInternalServerError,
+    generateNotFoundError,
     generateSuccessResponse,
+    generateUnprocessableEntityError,
 } from 'src/utils';
 import { BaseService } from '../base/base.service';
 import { MemberService } from '../members/members.service';
@@ -45,7 +47,20 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
     async getCreatedOrganizations(userID: string) {
         try {
             const orgs = await this.find({ createdBy: userID });
-            return generateSuccessResponse(orgs);
+            const promises = [];
+            orgs.forEach((org: any) => {
+                promises.push(this.memberService.getByOrg(org._id));
+            });
+            const resolved = await Promise.all(promises);
+
+            const data = resolved.map((e, i) => {
+                return {
+                    org: orgs[i],
+                    members: e.data,
+                };
+            });
+
+            return generateSuccessResponse(data);
         } catch (e) {
             return generateInternalServerError(e);
         }
@@ -55,6 +70,25 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         try {
             const orgs = this.memberService.getUserOrganizations(userID);
             return orgs;
+        } catch (e) {
+            return generateInternalServerError(e);
+        }
+    }
+
+    async addMember(orgID: string, userID: string) {
+        try {
+            if (!isValidObjectId(orgID) || !isValidObjectId(userID)) {
+                return generateUnprocessableEntityError('Invalid ID provided');
+            }
+
+            const org = await this.findOne({ _id: orgID });
+            if (!org) {
+                return generateNotFoundError('Organization not found');
+            }
+
+            const member = await this.memberService.addMember(orgID, userID);
+
+            return generateSuccessResponse(member.data, HttpStatus.CREATED);
         } catch (e) {
             return generateInternalServerError(e);
         }
