@@ -1,9 +1,11 @@
 import {
     Body,
     Controller,
+    Delete,
     Get,
     Param,
     Post,
+    Query,
     Req,
     Res,
     UseGuards,
@@ -40,6 +42,13 @@ export class ProjectController {
         const id = req?.user?.id;
 
         const response = await this.projectService.getAll(id);
+        return res.status(response.code).json(response);
+    }
+
+    @RolesAllowed(Role.OWNER)
+    @Delete('/:id')
+    async deleteOne(@Req() req, @Res() res: Response, @Param() { id }) {
+        const response = await this.projectService.deleteOne(id);
         return res.status(response.code).json(response);
     }
 

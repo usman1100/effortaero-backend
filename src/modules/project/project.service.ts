@@ -57,7 +57,9 @@ export class ProjectService extends BaseService<ProjectDocument> {
 
     async getAll(id: string) {
         try {
-            const projects = await this.projectModel.find({ createdBy: id });
+            const projects = await this.projectModel
+                .find({ createdBy: id })
+                .populate('organization');
 
             return generateSuccessResponse(projects);
         } catch (error) {
@@ -72,6 +74,24 @@ export class ProjectService extends BaseService<ProjectDocument> {
             if (!project) {
                 return generateNotFoundError('Project not found');
             }
+
+            return generateSuccessResponse(project);
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
+    async deleteOne(id: string) {
+        try {
+            console.log(id);
+
+            const project = await this.projectModel.findById(id);
+
+            if (!project) {
+                return generateNotFoundError('Project not found');
+            }
+
+            await this.projectModel.findByIdAndDelete(id);
 
             return generateSuccessResponse(project);
         } catch (error) {

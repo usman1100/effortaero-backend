@@ -1,9 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export enum ActorComplexity {
-    Simple = 'Simple',
-    Average = 'Average',
-    Complex = 'Complex',
+    Simple = 'simple',
+    Average = 'average',
+    Complex = 'complex',
 }
 
 @Schema({ timestamps: true })
@@ -12,30 +12,22 @@ export class Actor {
         type: String,
         maxlength: 60,
         minlength: 2,
+        required: true,
     })
     name: string;
 
     @Prop({
         type: String,
-        maxlength: 200,
-        minlength: 2,
+        required: false,
     })
     description: string;
 
-    // complexity: UseCaseComplexity;
     @Prop({
         type: String,
         enum: ActorComplexity,
         default: ActorComplexity.Simple,
     })
     complexity: ActorComplexity;
-
-    @Prop({
-        type: String,
-        ref: 'User',
-        required: true,
-    })
-    createdBy: string;
 }
 
 export const ActorSchema = SchemaFactory.createForClass(Actor);
