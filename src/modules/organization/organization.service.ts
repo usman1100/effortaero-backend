@@ -29,6 +29,20 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
         super(orgModel);
     }
 
+    async getOne(id: string) {
+        try {
+            const org = await this.orgModel.findById(id);
+
+            if (!org) return generateNotFoundError('Organization not found');
+
+            const { data: members } = await this.memberService.getByOrg(id);
+
+            return generateSuccessResponse({ org, members });
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
     async createNew(orgInfo: CreateOrganizationDTO) {
         try {
             const orgExists = await this.findOne({ name: orgInfo.name });
@@ -98,6 +112,18 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
             return generateSuccessResponse(member.data, HttpStatus.CREATED);
         } catch (e) {
             return generateInternalServerError(e);
+        }
+    }
+
+    async getMembers(orgID: string) {
+        try {
+            if (!orgID || !isValidObjectId(orgID)) {
+                return generateUnprocessableEntityError('Invalid ID provided');
+            }
+            const members = await this.memberService.find({ orgID });
+            return generateSuccessResponse(members);
+        } catch (error) {
+            return generateInternalServerError(error);
         }
     }
 }

@@ -13,7 +13,7 @@ export class Project {
     @Prop({
         required: true,
         type: String,
-        maxlength: 30,
+        maxlength: 200,
         minlength: 2,
     })
     name: string;

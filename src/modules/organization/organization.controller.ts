@@ -19,6 +19,7 @@ import { OrganizationService } from './organization.service';
 @UseGuards(JwtAuthGuard, RolesGuard)
 export class OrganizationController {
     constructor(private readonly organizationService: OrganizationService) {}
+
     @Post('create')
     @RolesAllowed(Role.OWNER)
     async create(@Req() req, @Res() res: Response) {
@@ -62,6 +63,19 @@ export class OrganizationController {
             userID,
         );
 
+        return res.status(response.code).json(response);
+    }
+
+    @RolesAllowed(Role.OWNER)
+    @Post('members')
+    async getMembers(@Body() body, @Res() res) {
+        const response = await this.organizationService.getMembers(body.orgID);
+        return res.status(response.code).json(response);
+    }
+
+    @Get('/:id')
+    async getOne(@Req() req, @Res() res: Response) {
+        const response = await this.organizationService.getOne(req?.params?.id);
         return res.status(response.code).json(response);
     }
 }

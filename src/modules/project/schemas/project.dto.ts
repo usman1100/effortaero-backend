@@ -4,7 +4,7 @@ export class CreateProjectDTO {
     @IsString({
         message: 'Project name not provided',
     })
-    @Length(2, 30, {
+    @Length(2, 200, {
         message: 'Project name must be between 2 and 30 characters',
     })
     name: string;

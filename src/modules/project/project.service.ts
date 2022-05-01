@@ -69,7 +69,9 @@ export class ProjectService extends BaseService<ProjectDocument> {
 
     async getOne(id: string) {
         try {
-            const project = await this.projectModel.findById(id);
+            const project = await this.projectModel
+                .findById(id)
+                .populate('organization');
 
             if (!project) {
                 return generateNotFoundError('Project not found');
