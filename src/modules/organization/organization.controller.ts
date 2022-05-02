@@ -22,13 +22,15 @@ export class OrganizationController {
 
     @Post('create')
     @RolesAllowed(Role.OWNER)
-    async create(@Req() req, @Res() res: Response) {
+    async create(@Req() req, @Body() body, @Res() res: Response) {
         const id = req?.user?.id;
-        const { name } = req.body;
+
+        console.log(id);
 
         const response = await this.organizationService.createNew({
+            name: body.name,
+            slogan: body.slogan,
             createdBy: id,
-            name,
         });
         return res.status(response.code).json(response);
     }

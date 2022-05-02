@@ -14,6 +14,13 @@ export class Organization {
     name: string;
 
     @Prop({
+        required: false,
+        type: String,
+        maxlength: 100,
+    })
+    slogan: string;
+
+    @Prop({
         type: MongooseSchema.Types.ObjectId,
         ref: 'User',
         required: true,

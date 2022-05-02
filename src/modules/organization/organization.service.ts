@@ -48,7 +48,9 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
             const orgExists = await this.findOne({ name: orgInfo.name });
 
             if (orgExists) {
-                return generateAlreadyExistError('Organization already exists');
+                return generateAlreadyExistError(
+                    'Organization name already exists',
+                );
             }
 
             const newOrg = await this.create(orgInfo);
@@ -83,8 +85,6 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
 
     async myOrganization(userID: string) {
         try {
-            const orgs = this.memberService.getUserOrganizations(userID);
-            return orgs;
         } catch (e) {
             return generateInternalServerError(e);
         }
