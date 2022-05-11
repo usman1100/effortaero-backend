@@ -1,90 +1,52 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 
-export interface RootObject {
-    SimpleActors: number;
-    AverageActors: number;
-    ComplexActors: number;
-    UAW: number;
-    SimpleUC: number;
-    AverageUC: number;
-    ComplexUC: number;
-    UUCW: number;
-    TCF: number;
-    ECF: number;
-    Effort: number;
+export enum EstimationType {
+    ML = 'ml',
+    UCP = 'ucp',
+    DELPHI = 'delphi',
+}
+export interface EstimationInterface {
+    _id: string;
+    createdBy: string;
+    createdAt: Date;
+    updatedAt: Date;
+    value: number;
+    description: string;
+    estimationType: EstimationType;
 }
 
 export type UserDocument = Estimation & Document;
 
 @Schema()
 export class Estimation {
-    // all fields in RootObject
     @Prop({
         required: true,
-        type: Number,
+        type: MongooseSchema.Types.ObjectId,
+        ref: 'User',
     })
-    SimpleActors: number;
+    createdBy: string;
 
     @Prop({
-        required: true,
         type: Number,
+        required: true,
     })
-    AverageActors: number;
+    value: number;
 
     @Prop({
-        required: true,
-        type: Number,
+        type: String,
+        maxlength: 200,
+        minlength: 2,
+        required: false,
     })
-    ComplexActors: number;
+    description: string;
 
     @Prop({
+        type: String,
+        enum: EstimationType,
         required: true,
-        type: Number,
     })
-    UAW: number;
-
-    @Prop({
-        required: true,
-        type: Number,
-    })
-    SimpleUC: number;
-
-    @Prop({
-        required: true,
-        type: Number,
-    })
-    AverageUC: number;
-
-    @Prop({
-        required: true,
-        type: Number,
-    })
-    ComplexUC: number;
-
-    @Prop({
-        required: true,
-        type: Number,
-    })
-    UUCW: number;
-
-    @Prop({
-        required: true,
-        type: Number,
-    })
-    TCF: number;
-
-    @Prop({
-        required: true,
-        type: Number,
-    })
-    ECF: number;
-
-    @Prop({
-        required: true,
-        type: Number,
-    })
-    Effort: number;
+    estimationType: EstimationType;
 }
 
 export const EstimationSchema = SchemaFactory.createForClass(Estimation);
