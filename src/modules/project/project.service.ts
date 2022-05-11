@@ -85,7 +85,7 @@ export class ProjectService extends BaseService<ProjectDocument> {
 
     async deleteOne(id: string) {
         try {
-            console.log(id);
+            id;
 
             const project = await this.projectModel.findById(id);
 

@@ -25,8 +25,6 @@ export class OrganizationController {
     async create(@Req() req, @Body() body, @Res() res: Response) {
         const id = req?.user?.id;
 
-        console.log(id);
-
         const response = await this.organizationService.createNew({
             name: body.name,
             slogan: body.slogan,

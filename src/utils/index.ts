@@ -66,9 +66,6 @@ export const generateUnprocessableEntityError = (
 
 export const compareMongoID = (mongoID: string, id: string) => {
     const compareID = new Types.ObjectId(id);
-    console.log(compareID);
-    console.log(mongoID);
-    console.log(id);
 
     return compareID.equals(mongoID);
 };
