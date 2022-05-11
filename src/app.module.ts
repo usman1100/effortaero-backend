@@ -6,8 +6,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ProjectModule } from './modules/project/project.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { MemberModule } from './modules/members/members.module';
-import { JwtModule } from '@nestjs/jwt';
-import jwtConstants from './constants/jwtConstants';
+import { EstimationModule } from './modules/estimation/estimation.module';
 
 @Module({
     imports: [
@@ -22,6 +21,8 @@ import jwtConstants from './constants/jwtConstants';
         OrganizationModule,
 
         MemberModule,
+
+        EstimationModule,
     ],
     controllers: [AppController],
     providers: [],

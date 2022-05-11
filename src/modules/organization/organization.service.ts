@@ -63,7 +63,9 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
 
     async getCreatedOrganizations(userID: string) {
         try {
-            const orgs = await this.find({ createdBy: userID });
+            const orgs = await this.orgModel.find({ createdBy: userID });
+            console.log(orgs);
+
             const promises = [];
             orgs.forEach((org: any) => {
                 promises.push(this.memberService.getByOrg(org._id));
