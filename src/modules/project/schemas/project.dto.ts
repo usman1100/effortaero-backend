@@ -1,4 +1,4 @@
-import { IsString, Length } from 'class-validator';
+import { IsObject, IsString, Length } from 'class-validator';
 
 export class CreateProjectDTO {
     @IsString({
@@ -16,6 +16,16 @@ export class CreateProjectDTO {
         message: 'Organization ID must be a valid MongoDB ObjectID',
     })
     orgID: string;
+
+    @IsObject({
+        message: 'Environmental factors not provided',
+    })
+    environmentalFactors: any;
+
+    @IsObject({
+        message: 'Technical factors not provided',
+    })
+    technicalFactors: any;
 }
 
 export class GetOneProjectDTO {

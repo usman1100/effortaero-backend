@@ -44,6 +44,18 @@ export class Project {
         default: [],
     })
     useCases: UseCase[];
+
+    @Prop({
+        required: false,
+        type: Number,
+    })
+    tcf: number;
+
+    @Prop({
+        required: false,
+        type: Number,
+    })
+    ecf: number;
 }
 
 export const ProjectSchema = SchemaFactory.createForClass(Project);

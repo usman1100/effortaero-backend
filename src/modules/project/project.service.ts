@@ -8,6 +8,7 @@ import {
     generateSuccessResponse,
 } from 'src/utils';
 import { BaseService } from '../base/base.service';
+import { caluclateECF, caluclateTCF } from '../estimation/estimation.weights';
 import { OrganizationService } from '../organization/organization.service';
 import { CreateProjectDTO } from './schemas/project.dto';
 import { Project, ProjectDocument } from './schemas/project.schema';
@@ -43,10 +44,15 @@ export class ProjectService extends BaseService<ProjectDocument> {
                 );
             }
 
+            const ecf = caluclateECF(projectInfo.environmentalFactors);
+            const tcf = caluclateTCF(projectInfo.technicalFactors);
+
             const newProject = await this.projectModel.create({
                 ...projectInfo,
                 organization: projectInfo.orgID,
                 createdBy: userID,
+                ecf,
+                tcf,
             });
 
             return generateSuccessResponse(newProject, HttpStatus.CREATED);
