@@ -16,7 +16,7 @@ export interface EstimationInterface {
     estimationType: EstimationType;
 }
 
-export type UserDocument = Estimation & Document;
+export type EstimationDocument = Estimation & Document;
 
 @Schema()
 export class Estimation {
