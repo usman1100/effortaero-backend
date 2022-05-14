@@ -2,6 +2,7 @@ import {
     IsEmail,
     IsEnum,
     IsNotEmpty,
+    IsOptional,
     IsString,
     Matches,
     MaxLength,
@@ -31,4 +32,19 @@ export class UserDTO {
         message: "Role must be one of the following: 'OWNER', 'USER',",
     })
     role: Role;
+}
+
+export class SocialDTO {
+    @IsString()
+    @MaxLength(30)
+    @MinLength(2)
+    @IsOptional()
+    name: string;
+
+    @IsEmail()
+    @MaxLength(40)
+    email: string;
+
+    @IsString()
+    authProvider: string;
 }

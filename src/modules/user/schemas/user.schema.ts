@@ -34,12 +34,11 @@ export class User {
     })
     role: string;
 
-    // organization: ref to Organization
     @Prop({
-        type: MongooseSchema.Types.ObjectId,
-        ref: 'Organization',
+        type: String,
+        default: null,
     })
-    organization: string;
+    authProvider: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

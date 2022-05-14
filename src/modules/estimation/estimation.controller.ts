@@ -2,7 +2,7 @@ import { Controller, Get, Param, Req, Res } from '@nestjs/common';
 import { EstimationService } from './estimation.service';
 import { MLService } from './ml.service';
 
-@Controller('estimation')
+@Controller('estimations')
 export class EstimationController {
     constructor(
         private readonly estimationService: EstimationService,

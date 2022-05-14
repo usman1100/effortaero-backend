@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { generateSuccessResponse } from 'src/utils';
-import { UserDTO } from '../user/schemas/user.dto';
+import { SocialDTO, UserDTO } from '../user/schemas/user.dto';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dtos/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -22,6 +22,12 @@ export class AuthController {
             loginCred.email,
             loginCred.password,
         );
+        return res.status(data.code).json(data);
+    }
+
+    @Post('social-login')
+    async socialLogin(@Body() loginCred: SocialDTO, @Res() res: Response) {
+        const data = await this.authService.socialLogin(loginCred);
         return res.status(data.code).json(data);
     }
 
