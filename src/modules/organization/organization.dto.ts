@@ -17,8 +17,4 @@ export class AddMemberDTO {
     @MinLength(24)
     @MaxLength(24)
     userID: string;
-
-    @MinLength(24)
-    @MaxLength(24)
-    orgID: string;
 }

@@ -2,6 +2,7 @@ import {
     Body,
     Controller,
     Get,
+    Param,
     Post,
     Req,
     Res,
@@ -53,15 +54,13 @@ export class OrganizationController {
     }
 
     @RolesAllowed(Role.OWNER)
-    @Post('addmember')
+    @Post('/:id/member/')
     async addMember(
-        @Body() { orgID, userID }: AddMemberDTO,
+        @Body() { userID }: AddMemberDTO,
         @Res() res: Response,
+        @Param() { id },
     ) {
-        const response = await this.organizationService.addMember(
-            orgID,
-            userID,
-        );
+        const response = await this.organizationService.addMember(id, userID);
 
         return res.status(response.code).json(response);
     }
