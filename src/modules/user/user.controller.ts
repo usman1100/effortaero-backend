@@ -1,9 +1,19 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Put,
+    Query,
+    Req,
+    Res,
+    UseGuards,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesAllowed } from '../auth/roles/role.decorator';
 import { RolesGuard } from '../auth/roles/role.guard';
 import { Role } from '../auth/roles/role.type';
+import { SearchUsersDTO, UpdateUserDTO } from './schemas/user.dto';
 import { UserService } from './user.service';
 
 @Controller('users')
@@ -11,10 +21,10 @@ import { UserService } from './user.service';
 export class UserController {
     constructor(private readonly userService: UserService) {}
 
-    @Get('search')
+    @Get('')
     @RolesAllowed(Role.OWNER)
-    async getAll(@Res() res: Response) {
-        const response = await this.userService.getAll();
+    async search(@Res() res, @Query() query: SearchUsersDTO) {
+        const response = await this.userService.search(query);
         return res.status(response.code).json(response);
     }
 
@@ -22,6 +32,13 @@ export class UserController {
     async myInfo(@Res() res, @Req() req) {
         const userID = req?.user?.id;
         const response = await this.userService.myInfo(userID);
+        return res.status(response.code).json(response);
+    }
+
+    @Put('me')
+    async updateMyInfo(@Res() res, @Req() req, @Body() body: UpdateUserDTO) {
+        const userID = req?.user?.id;
+        const response = await this.userService.updateMyInfo(userID, body);
         return res.status(response.code).json(response);
     }
 }

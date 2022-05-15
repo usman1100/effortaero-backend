@@ -7,7 +7,7 @@ import {
     generateSuccessResponse,
 } from 'src/utils';
 import { BaseService } from '../base/base.service';
-import { UserDTO } from './schemas/user.dto';
+import { SearchUsersDTO, UpdateUserDTO, UserDTO } from './schemas/user.dto';
 import { User, UserDocument } from './schemas/user.schema';
 
 @Injectable()
@@ -28,6 +28,30 @@ export class UserService extends BaseService<UserDocument> {
             return generateSuccessResponse(userInfo);
         } catch (e) {
             return generateInternalServerError(e);
+        }
+    }
+
+    async updateMyInfo(userID: string, info: UpdateUserDTO) {
+        try {
+            const user = await this.userModel.findById(userID);
+
+            if (!user) {
+                return generateNotFoundError('No user with this ID exists');
+            }
+            const update = await this.userModel.findByIdAndUpdate(
+                userID,
+                {
+                    name: info.name,
+                    email: info.email,
+                },
+                {
+                    new: true,
+                },
+            );
+
+            return generateSuccessResponse(update);
+        } catch (error) {
+            return generateInternalServerError(error);
         }
     }
 
@@ -57,6 +81,38 @@ export class UserService extends BaseService<UserDocument> {
                 message: 'Something went wrong',
                 data: null,
             };
+        }
+    }
+
+    async search(params: SearchUsersDTO) {
+        try {
+            const emailRegex = params.email
+                ? new RegExp(params.email, 'i')
+                : new RegExp('a^');
+            const nameRegex = params.name
+                ? new RegExp(params.name, 'i')
+                : new RegExp('a^');
+
+            const users = await this.userModel.find({
+                $or: [
+                    {
+                        name: {
+                            $regex: nameRegex,
+                        },
+                    },
+
+                    {
+                        email: {
+                            $regex: emailRegex,
+                        },
+                    },
+                ],
+                role: 'user',
+            });
+
+            return generateSuccessResponse(users);
+        } catch (error) {
+            return generateInternalServerError(error);
         }
     }
 

@@ -48,3 +48,27 @@ export class SocialDTO {
     @IsString()
     authProvider: string;
 }
+
+export class UpdateUserDTO {
+    @IsOptional()
+    @IsString()
+    @MaxLength(30)
+    @MinLength(2)
+    name: string;
+
+    @IsOptional()
+    @IsEmail()
+    @MaxLength(40)
+    email: string;
+}
+
+export class SearchUsersDTO {
+    @IsOptional()
+    @MaxLength(40)
+    email: string;
+
+    @IsOptional()
+    @IsString()
+    @MaxLength(30)
+    name: string;
+}
