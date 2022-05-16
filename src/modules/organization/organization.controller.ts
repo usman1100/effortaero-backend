@@ -53,6 +53,15 @@ export class OrganizationController {
         return res.status(response.code).json(response);
     }
 
+    @RolesAllowed(Role.USER)
+    @Get('joined')
+    async getJoinedOrgs(@Req() req, @Res() res: Response) {
+        const response = await this.organizationService.getJoinedOrgs(
+            req?.user?.id,
+        );
+        return res.status(response.code).json(response);
+    }
+
     @RolesAllowed(Role.OWNER)
     @Post('/:id/member/')
     async addMember(

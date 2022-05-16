@@ -10,6 +10,7 @@ import {
     generateUnprocessableEntityError,
 } from 'src/utils';
 import { BaseService } from '../base/base.service';
+import { Member } from '../members/members.schema';
 import { MemberService } from '../members/members.service';
 import { RequestService } from '../requests/requests.service';
 import { CreateOrganizationDTO } from './organization.dto';
@@ -23,6 +24,9 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
     constructor(
         @InjectModel(Organization.name)
         private readonly orgModel: Model<OrganizationDocument>,
+
+        @InjectModel(Member.name)
+        private readonly memberModel: Model<Member>,
         private readonly memberService: MemberService,
         private readonly requestService: RequestService,
     ) {
@@ -123,6 +127,17 @@ export class OrganizationService extends BaseService<OrganizationDocument> {
             }
             const members = await this.memberService.find({ orgID });
             return generateSuccessResponse(members);
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
+    async getJoinedOrgs(userID: string) {
+        try {
+            const orgs = await this.memberModel
+                .find({ userID })
+                .populate('orgID');
+            return generateSuccessResponse(orgs);
         } catch (error) {
             return generateInternalServerError(error);
         }

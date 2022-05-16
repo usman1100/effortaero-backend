@@ -10,8 +10,9 @@ import { ProjectService } from '../project/project.service';
 import { Project } from '../project/schemas/project.schema';
 import { ActorComplexity } from '../project/subschemas/actor';
 import { UseCaseComplexity } from '../project/subschemas/usecase';
-import { Estimation } from './estimation.schema';
+import { Estimation, EstimationTypeEnum } from './estimation.schema';
 import { Repo } from './repo.schema';
+import mongoose from 'mongoose';
 
 interface UAWType {
     SA: number;
@@ -156,11 +157,26 @@ export class MLService {
 
             const prediction = getNearestNeighbor(2, target, parsedProjects);
 
-            return generateSuccessResponse({
-                prediction,
-                effort: repo[prediction].Effort,
-                name: project.name,
+            const estimation: Estimation = await this.estimationModel.create({
+                value: repo[prediction].Effort,
+                projectID,
+                estimationType: EstimationTypeEnum.ML,
             });
+
+            return generateSuccessResponse(estimation);
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
+    async projectEstimations(projectID: string, estimationType: string) {
+        try {
+            const estimations = await this.estimationModel.find({
+                projectID: new mongoose.Types.ObjectId(projectID),
+                estimationType,
+            });
+
+            return generateSuccessResponse(estimations);
         } catch (error) {
             return generateInternalServerError(error);
         }

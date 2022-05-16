@@ -38,6 +38,20 @@ export class UserService extends BaseService<UserDocument> {
             if (!user) {
                 return generateNotFoundError('No user with this ID exists');
             }
+
+            const exists = await this.userModel.findOne({
+                email: info.email,
+            });
+
+            if (exists && exists.id !== userID) {
+                return {
+                    failed: true,
+                    code: HttpStatus.CONFLICT,
+                    message: 'This email is already registered',
+                    data: null,
+                };
+            }
+
             const update = await this.userModel.findByIdAndUpdate(
                 userID,
                 {

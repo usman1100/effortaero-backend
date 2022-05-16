@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
 
-export enum EstimationType {
+export enum EstimationTypeEnum {
     ML = 'ml',
     UCP = 'ucp',
     DELPHI = 'delphi',
@@ -13,19 +13,21 @@ export interface EstimationInterface {
     updatedAt: Date;
     value: number;
     description: string;
-    estimationType: EstimationType;
+    estimationType: EstimationTypeEnum;
 }
 
 export type EstimationDocument = Estimation & Document;
 
-@Schema()
+@Schema({
+    timestamps: true,
+})
 export class Estimation {
     @Prop({
         required: true,
         type: MongooseSchema.Types.ObjectId,
-        ref: 'User',
+        ref: 'Project',
     })
-    createdBy: string;
+    projectID: string;
 
     @Prop({
         type: Number,
@@ -43,10 +45,10 @@ export class Estimation {
 
     @Prop({
         type: String,
-        enum: EstimationType,
+        enum: EstimationTypeEnum,
         required: true,
     })
-    estimationType: EstimationType;
+    estimationType: EstimationTypeEnum;
 }
 
 export const EstimationSchema = SchemaFactory.createForClass(Estimation);
