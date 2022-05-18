@@ -1,19 +1,34 @@
-import { Injectable } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Schema as MongooseSchema } from 'mongoose';
+import {
+    Contribution,
+    ContributionSchema,
+} from './subschemas/contribution.schema';
 
 export type DelphiRoundDocument = DelphiRound & Document;
 
-@Schema()
-@Injectable()
+@Schema({
+    timestamps: true,
+})
 export class DelphiRound {
     @Prop({
-        required: true,
-        // type: MongooseSchema.Types.ObjectId,
-        // ref: 'User',
-        type: String,
+        type: MongooseSchema.Types.ObjectId,
+        ref: 'Project',
     })
-    name: string;
+    projectID: string;
+
+    @Prop({
+        type: Boolean,
+        default: false,
+    })
+    hasEnded: boolean;
+
+    @Prop({
+        required: true,
+        type: [ContributionSchema],
+        default: [],
+    })
+    contributions: Contribution[];
 }
 
 export const DelphiRoundSchema = SchemaFactory.createForClass(DelphiRound);

@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ProjectModule } from '../project/project.module';
+import { DelphiController } from './delphi.controller';
+import { DelphiService } from './delphi.service';
 import { DelphiRoundSchema } from './delphiRound.schema';
 import { EstimationController } from './estimation.controller';
 import { EstimationSchema } from './estimation.schema';
@@ -22,7 +24,7 @@ import { RepoSchema } from './repo.schema';
         ProjectModule,
     ],
     exports: [EstimationModule],
-    providers: [EstimationService, MLService],
-    controllers: [EstimationController],
+    providers: [EstimationService, MLService, DelphiService],
+    controllers: [EstimationController, DelphiController],
 })
 export class EstimationModule {}
