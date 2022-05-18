@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Res, UseGuards } from '@nestjs/common';
+import {
+    Body,
+    Controller,
+    Get,
+    Post,
+    Res,
+    UseGuards,
+    Param,
+} from '@nestjs/common';
 import { Response } from 'express';
 import { generateSuccessResponse } from 'src/utils';
 import { SocialDTO, UserDTO } from '../user/schemas/user.dto';
@@ -35,5 +43,12 @@ export class AuthController {
     async signUp(@Body() userInfo: UserDTO, @Res() res: Response) {
         const data = await this.authService.signUp(userInfo);
         return res.status(data.code).json(data);
+    }
+    @Get('verify/:id')
+    async verify(@Res() res, @Param('id') id: string) {
+        const data = await this.authService.verify(id);
+        if (data.failed) {
+            return res.status(data.code).json(data);
+        } else return res.redirect(`${process.env.FRONTEND_URL}/`);
     }
 }

@@ -3,16 +3,19 @@ import { UserService } from '../user/user.service';
 import { SocialDTO, UserDTO } from '../user/schemas/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { hash, compareSync, hashSync } from 'bcrypt';
+import { MailerService } from '@nestjs-modules/mailer';
 import {
     generateInternalServerError,
     generateResponse,
     generateSuccessResponse,
 } from 'src/utils';
 import { v4 as uuid } from 'uuid';
+import 'dotenv/config';
 
 @Injectable()
 export class AuthService {
     constructor(
+        private readonly mailerService: MailerService,
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
     ) {}
@@ -28,6 +31,15 @@ export class AuthService {
                     message: 'No user found with this email',
                     user: null,
                 };
+
+            if (!user.isVerified) {
+                return generateResponse(
+                    true,
+                    HttpStatus.UNAUTHORIZED,
+                    'Please verify your email first',
+                    null,
+                );
+            }
 
             const passwordMatched = compareSync(password, user.password);
 
@@ -79,18 +91,19 @@ export class AuthService {
                 password: hashedPassword,
             });
 
-            const payload = {
-                id: user.id,
-                email: user.email,
-                role: user.role,
-            };
-
-            const token = this.jwtService.sign(payload);
-
-            return generateResponse(false, HttpStatus.CREATED, '', {
-                token,
-                user: user,
+            await this.mailerService.sendMail({
+                to: 'usmanahmed1100@gmail.com',
+                from: 'usman@gmail.com',
+                subject: 'Nothing',
+                html: `
+                <h1>
+                    <a href="${process.env.BACKEND_URL}/auth/verify/${user._id}">Click here</a>
+                    <p>to verify your account</p>
+                </h1>
+                `,
             });
+
+            return generateSuccessResponse(null, HttpStatus.CREATED);
         } catch (e) {
             return generateInternalServerError(e);
         }
@@ -140,6 +153,17 @@ export class AuthService {
                 },
                 HttpStatus.CREATED,
             );
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
+    async verify(id: string) {
+        try {
+            const user = await this.userService.update(id, {
+                isVerified: true,
+            });
+            return generateSuccessResponse(user);
         } catch (error) {
             return generateInternalServerError(error);
         }

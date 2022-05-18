@@ -7,6 +7,8 @@ import { ProjectModule } from './modules/project/project.module';
 import { OrganizationModule } from './modules/organization/organization.module';
 import { MemberModule } from './modules/members/members.module';
 import { EstimationModule } from './modules/estimation/estimation.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import 'dotenv/config';
 
 @Module({
     imports: [
@@ -23,6 +25,21 @@ import { EstimationModule } from './modules/estimation/estimation.module';
         MemberModule,
 
         EstimationModule,
+
+        MailerModule.forRoot({
+            transport: {
+                host: process.env.MAIL_SMTP,
+                port: Number(process.env.MAIL_PORT),
+                secure: false,
+                auth: {
+                    user: process.env.MAIL_USER,
+                    pass: process.env.MAIL_PASS,
+                },
+            },
+            defaults: {
+                from: process.env.MAIL_FROM, // sender address
+            },
+        }),
     ],
     controllers: [AppController],
     providers: [],

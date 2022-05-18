@@ -39,6 +39,12 @@ export class User {
         default: null,
     })
     authProvider: string;
+
+    @Prop({
+        type: Boolean,
+        default: false,
+    })
+    isVerified: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
