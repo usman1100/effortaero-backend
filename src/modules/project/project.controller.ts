@@ -5,6 +5,7 @@ import {
     Get,
     Param,
     Post,
+    Put,
     Query,
     Req,
     Res,
@@ -56,6 +57,13 @@ export class ProjectController {
     @RolesAllowed(Role.OWNER)
     async getOne(@Param() params: GetOneProjectDTO, @Res() res: Response) {
         const response = await this.projectService.getOne(params.id);
+        return res.status(response.code).json(response);
+    }
+
+    @Put('/:id')
+    @RolesAllowed(Role.OWNER)
+    async updateOne(@Res() res: Response, @Param() { id }, @Body() info) {
+        const response = await this.projectService.updateOne(id, info);
         return res.status(response.code).json(response);
     }
 }

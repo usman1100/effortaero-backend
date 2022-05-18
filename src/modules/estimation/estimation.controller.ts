@@ -1,4 +1,4 @@
-import { Controller, Get, Param, Post, Req, Res } from '@nestjs/common';
+import { Controller, Delete, Get, Param, Post, Res } from '@nestjs/common';
 import { EstimationService } from './estimation.service';
 import { MLService } from './ml.service';
 
@@ -9,9 +9,10 @@ export class EstimationController {
         private readonly mlService: MLService,
     ) {}
 
-    @Get('test')
-    async test() {
-        return this.estimationService.test();
+    @Delete('/:id')
+    async deleteEstimation(@Res() res, @Param('id') id) {
+        const response = await this.estimationService.deleteEstimation(id);
+        return res.status(response.code).json(response);
     }
 
     @Post('/:projectId/ml')

@@ -4,6 +4,10 @@ import { isValidObjectId, Model } from 'mongoose';
 import { Injectable } from '@nestjs/common';
 import { DelphiRound } from './delphiRound.schema';
 import { Repo } from './repo.schema';
+import {
+    generateInternalServerError,
+    generateSuccessResponse,
+} from 'src/utils';
 
 @Injectable()
 export class EstimationService {
@@ -16,5 +20,15 @@ export class EstimationService {
     async test() {
         await this.delphiRoundModel.create({ name: 'test' });
         return this.estimationModel.find();
+    }
+
+    async deleteEstimation(id: string) {
+        try {
+            const response = await this.estimationModel.findByIdAndDelete(id);
+
+            return generateSuccessResponse(response);
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
     }
 }

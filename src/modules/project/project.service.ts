@@ -106,4 +106,26 @@ export class ProjectService extends BaseService<ProjectDocument> {
             return generateInternalServerError(error);
         }
     }
+
+    async updateOne(id: string, projectInfo: any) {
+        try {
+            const project = await this.projectModel.findById(id);
+
+            if (!project) {
+                return generateNotFoundError('Project not found');
+            }
+
+            const updatedProject = await this.projectModel.findByIdAndUpdate(
+                id,
+                {
+                    ...projectInfo,
+                },
+                { new: true },
+            );
+
+            return generateSuccessResponse(updatedProject);
+        } catch (error: any) {
+            return generateInternalServerError(error);
+        }
+    }
 }
