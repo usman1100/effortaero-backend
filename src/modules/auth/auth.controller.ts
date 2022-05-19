@@ -6,10 +6,15 @@ import {
     Res,
     UseGuards,
     Param,
+    Req,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { generateSuccessResponse } from 'src/utils';
-import { SocialDTO, UserDTO } from '../user/schemas/user.dto';
+import {
+    ChangePasswordDTO,
+    SocialDTO,
+    UserDTO,
+} from '../user/schemas/user.dto';
 import { AuthService } from './auth.service';
 import { LoginDTO } from './dtos/login.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
@@ -44,6 +49,21 @@ export class AuthController {
         const data = await this.authService.signUp(userInfo);
         return res.status(data.code).json(data);
     }
+
+    @Post('change-password')
+    @UseGuards(JwtAuthGuard)
+    async changePassword(
+        @Body() body: ChangePasswordDTO,
+        @Res() res: Response,
+        @Req() req,
+    ) {
+        console.log(req);
+        const userID = req?.user?.id;
+
+        const data = await this.authService.changePassword(userID, body);
+        return res.status(data.code).json(data);
+    }
+
     @Get('verify/:id')
     async verify(@Res() res, @Param('id') id: string) {
         const data = await this.authService.verify(id);

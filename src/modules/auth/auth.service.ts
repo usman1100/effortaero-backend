@@ -1,6 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
-import { SocialDTO, UserDTO } from '../user/schemas/user.dto';
+import {
+    ChangePasswordDTO,
+    SocialDTO,
+    UserDTO,
+} from '../user/schemas/user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { hash, compareSync, hashSync } from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
@@ -134,6 +138,7 @@ export class AuthService {
                 ...info,
                 role: 'user',
                 password: hashSync(uuid(), 10),
+                isVerified: true,
             });
 
             const payload = {
@@ -153,6 +158,47 @@ export class AuthService {
                 },
                 HttpStatus.CREATED,
             );
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
+    async changePassword(id: string, info: ChangePasswordDTO) {
+        try {
+            const user = await this.userService.findOne({
+                _id: id,
+            });
+
+            if (!user) {
+                return generateResponse(
+                    true,
+                    HttpStatus.NOT_FOUND,
+                    'No user found with this id',
+                    null,
+                );
+            }
+
+            const passwordMatched = compareSync(
+                info.oldPassword,
+                user.password,
+            );
+
+            if (!passwordMatched) {
+                return generateResponse(
+                    true,
+                    HttpStatus.UNAUTHORIZED,
+                    'Wrong password',
+                    null,
+                );
+            }
+
+            const hashedPassword = await hash(info.newPassword, 10);
+
+            const updatedUser = await this.userService.update(id, {
+                password: hashedPassword,
+            });
+
+            return generateSuccessResponse(updatedUser);
         } catch (error) {
             return generateInternalServerError(error);
         }

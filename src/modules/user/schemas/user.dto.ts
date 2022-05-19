@@ -72,3 +72,13 @@ export class SearchUsersDTO {
     @MaxLength(30)
     name: string;
 }
+
+export class ChangePasswordDTO {
+    @IsString()
+    @MinLength(8)
+    oldPassword: string;
+
+    @IsString()
+    @MinLength(8)
+    newPassword: string;
+}
