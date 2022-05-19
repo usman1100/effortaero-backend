@@ -37,6 +37,18 @@ export class AuthService {
                 };
 
             if (!user.isVerified) {
+                await this.mailerService.sendMail({
+                    to: 'usmanahmed1100@gmail.com',
+                    from: 'usman@gmail.com',
+                    subject: 'Nothing',
+                    html: `
+                    <h1>
+                        <a href="${process.env.BACKEND_URL}/auth/verify/${user._id}">Click here</a>
+                        <p>to verify your account</p>
+                    </h1>
+                    `,
+                });
+
                 return generateResponse(
                     true,
                     HttpStatus.UNAUTHORIZED,
