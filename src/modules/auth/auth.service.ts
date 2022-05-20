@@ -38,12 +38,12 @@ export class AuthService {
 
             if (!user.isVerified) {
                 await this.mailerService.sendMail({
-                    to: 'usmanahmed1100@gmail.com',
-                    from: 'usman@gmail.com',
-                    subject: 'Nothing',
+                    to: user.email,
+                    from: process.env.MAIL_FROM,
+                    subject: 'Email verification',
                     html: `
                     <h1>
-                        <a href="${process.env.BACKEND_URL}/auth/verify/${user._id}">Click here</a>
+                        <a href="http://${process.env.BACKEND_URL}/auth/verify/${user._id}">Click here</a>
                         <p>to verify your account</p>
                     </h1>
                     `,
@@ -108,12 +108,12 @@ export class AuthService {
             });
 
             await this.mailerService.sendMail({
-                to: 'usmanahmed1100@gmail.com',
-                from: 'usman@gmail.com',
-                subject: 'Nothing',
+                to: user.email,
+                from: process.env.MAIL_FROM,
+                subject: 'Email verification',
                 html: `
                 <h1>
-                    <a href="${process.env.BACKEND_URL}/auth/verify/${user._id}">Click here</a>
+                    <a href="http://${process.env.BACKEND_URL}/auth/verify/${user._id}">Click here</a>
                     <p>to verify your account</p>
                 </h1>
                 `,
