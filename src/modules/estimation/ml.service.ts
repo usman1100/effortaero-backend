@@ -14,6 +14,7 @@ import { Estimation, EstimationTypeEnum } from './estimation.schema';
 import { Repo } from './repo.schema';
 import mongoose from 'mongoose';
 
+const PROD_FACTOR = 20;
 interface UAWType {
     SA: number;
     AA: number;
@@ -124,8 +125,13 @@ const getNearestNeighbor = (
 
     distances.sort((a, b) => a.distances - b.distances);
 
+    let average = 0;
+    for (let i = 0; i < k; i++) {
+        average += distances[i].distances;
+    }
+
     // return distances.slice(0, k);
-    return distances[0].index;
+    return average;
 };
 
 @Injectable()
@@ -152,15 +158,53 @@ export class MLService {
 
             const repo = await this.repoModel.find().lean();
 
+            if (!repo.length) {
+                return generateNotFoundError('Repo is not populated yet');
+            }
+
             const parsedProjects = repo.map((e) => dbItemToArray(e));
             const target = dbItemToArray(projectToRepoItem(project));
 
-            const prediction = getNearestNeighbor(2, target, parsedProjects);
+            const prediction =
+                getNearestNeighbor(2, target, parsedProjects) * PROD_FACTOR;
 
             const estimation: Estimation = await this.estimationModel.create({
-                value: repo[prediction].Effort,
+                // value: repo[prediction].Effort,
+                value: prediction,
                 projectID,
                 estimationType: EstimationTypeEnum.ML,
+            });
+
+            return generateSuccessResponse(estimation);
+        } catch (error) {
+            console.log(error);
+
+            return generateInternalServerError(error);
+        }
+    }
+
+    async UCP(projectID: string) {
+        try {
+            const project = await this.projectService.findById(projectID);
+            if (!project) {
+                return generateNotFoundError(
+                    'Project not found with id: ' + projectID,
+                );
+            }
+
+            const uaw = calculateUAW(projectToRepoItem(project));
+            const uucw = calculateUUCW(projectToRepoItem(project));
+
+            const UUCP = uaw + uucw;
+
+            const UCP = UUCP * project.tcf * project.ecf;
+
+            const effort = UCP * PROD_FACTOR;
+
+            const estimation = await this.estimationModel.create({
+                value: effort,
+                projectID,
+                estimationType: EstimationTypeEnum.UCP,
             });
 
             return generateSuccessResponse(estimation);

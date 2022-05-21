@@ -21,6 +21,12 @@ export class EstimationController {
         return res.status(response.code).json(response);
     }
 
+    @Post('/:projectId/ucp')
+    async ucp(@Res() res, @Param('projectId') projectId) {
+        const response = await this.mlService.UCP(projectId);
+        return res.status(response.code).json(response);
+    }
+
     @Get('/:projectId/:estimationType')
     async projectEstimations(
         @Res() res,
