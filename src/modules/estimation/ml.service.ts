@@ -177,8 +177,6 @@ export class MLService {
 
             return generateSuccessResponse(estimation);
         } catch (error) {
-            console.log(error);
-
             return generateInternalServerError(error);
         }
     }

@@ -57,7 +57,6 @@ export class AuthController {
         @Res() res: Response,
         @Req() req,
     ) {
-        console.log(req);
         const userID = req?.user?.id;
 
         const data = await this.authService.changePassword(userID, body);
