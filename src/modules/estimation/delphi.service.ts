@@ -20,7 +20,7 @@ export class DelphiService {
 
     async findByProjectId(projectId: string) {
         try {
-            const data = await this.delphiModel.findOne({ projectId });
+            const data = await this.delphiModel.find({ projectId });
             return generateSuccessResponse(data);
         } catch (error) {
             return generateInternalServerError(error);
