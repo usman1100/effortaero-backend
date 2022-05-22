@@ -204,6 +204,19 @@ export class AuthService {
                 );
             }
 
+            // check if old password and user password are same
+
+            const samePassword = compareSync(info.newPassword, user.password);
+
+            if (samePassword) {
+                return generateResponse(
+                    true,
+                    HttpStatus.BAD_REQUEST,
+                    'Old password and new password cannot be same',
+                    null,
+                );
+            }
+
             const hashedPassword = await hash(info.newPassword, 10);
 
             const updatedUser = await this.userService.update(id, {
