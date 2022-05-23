@@ -50,6 +50,12 @@ export class AuthController {
         return res.status(data.code).json(data);
     }
 
+    @Post('forget-password')
+    async forgotPassword(@Res() res, @Body() body) {
+        const data = await this.authService.forgotPassword(body);
+        return res.status(data.code).json(data);
+    }
+
     @Post('change-password')
     @UseGuards(JwtAuthGuard)
     async changePassword(

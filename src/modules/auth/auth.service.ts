@@ -2,6 +2,7 @@ import { HttpStatus, Injectable } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import {
     ChangePasswordDTO,
+    ForgetPasswordDTO,
     SocialDTO,
     UserDTO,
 } from '../user/schemas/user.dto';
@@ -10,6 +11,7 @@ import { hash, compareSync, hashSync } from 'bcrypt';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
     generateInternalServerError,
+    generateNotFoundError,
     generateResponse,
     generateSuccessResponse,
 } from 'src/utils';
@@ -235,6 +237,52 @@ export class AuthService {
                 isVerified: true,
             });
             return generateSuccessResponse(user);
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
+    async forgotPassword(body: ForgetPasswordDTO) {
+        try {
+            const email = body.email;
+            const { data: user } = await this.userService.findByEmail(email);
+
+            if (!user) {
+                return generateNotFoundError('No user found with this email');
+            }
+
+            if (!user.isVerified) {
+                return generateResponse(
+                    true,
+                    HttpStatus.UNAUTHORIZED,
+                    'Please verify your email first',
+                    null,
+                );
+            }
+
+            const newPassword = uuid();
+
+            const hashedPassword = await hash(newPassword, 10);
+
+            const updatedUser = await this.userService.update(
+                user._id.toString(),
+                {
+                    password: hashedPassword,
+                },
+            );
+
+            await this.mailerService.sendMail({
+                to: email,
+                from: process.env.MAIL_FROM,
+                subject: 'Password reset',
+                html: `
+                <h1>
+                    <p>Your new password is ${newPassword}</p>
+                </h1>
+                `,
+            });
+
+            return generateSuccessResponse(updatedUser);
         } catch (error) {
             return generateInternalServerError(error);
         }

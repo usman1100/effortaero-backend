@@ -82,3 +82,8 @@ export class ChangePasswordDTO {
     @MinLength(8)
     newPassword: string;
 }
+
+export class ForgetPasswordDTO {
+    @IsEmail()
+    email: string;
+}
