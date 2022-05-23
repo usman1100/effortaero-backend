@@ -1,10 +1,4 @@
-import {
-    IsNumber,
-    isNumber,
-    IsNumberString,
-    IsString,
-    Length,
-} from 'class-validator';
+import { IsNumber, IsOptional, IsString, Length } from 'class-validator';
 
 export class CreateDelphiRoundDTO {
     @IsString()
@@ -13,12 +7,10 @@ export class CreateDelphiRoundDTO {
 }
 
 export class AddContributionDTO {
-    userID: string;
-
     @IsNumber()
     value: number;
 
+    @IsOptional()
     @IsString()
-    @Length(24)
-    roundID: string;
+    message: string;
 }

@@ -24,6 +24,12 @@ import { CreateProjectDTO, GetOneProjectDTO } from './schemas/project.dto';
 export class ProjectController {
     constructor(private readonly projectService: ProjectService) {}
 
+    @Get('/org/:orgID')
+    async getByOrg(@Res() res: Response, @Param() { orgID }) {
+        const response = await this.projectService.getByOrg(orgID);
+        return res.status(response.code).json(response);
+    }
+
     @Post('')
     @RolesAllowed(Role.OWNER)
     async create(

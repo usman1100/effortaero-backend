@@ -18,9 +18,9 @@ import { AddContributionDTO, CreateDelphiRoundDTO } from './estimation.dto';
 export class DelphiController {
     constructor(private readonly delphiService: DelphiService) {}
 
-    @Post('/')
-    async createOne(@Res() res, @Body() body: CreateDelphiRoundDTO) {
-        const response = await this.delphiService.createOne(body);
+    @Get('/round/:id')
+    async findOne(@Res() res, @Param('id') id) {
+        const response = await this.delphiService.findOne(id);
         return res.status(response.code).json(response);
     }
 
@@ -29,12 +29,26 @@ export class DelphiController {
         @Res() res,
         @Body() body: AddContributionDTO,
         @Req() req,
+        @Param('id') id,
     ) {
-        const userID = req.user.id;
-        const response = await this.delphiService.addContribution({
-            ...body,
+        const userID = req?.user?.id;
+        const response = await this.delphiService.addContribution(
+            body,
+            id,
             userID,
-        });
+        );
+        return res.status(response.code).json(response);
+    }
+
+    @Post('/')
+    async createOne(@Res() res, @Body() body: CreateDelphiRoundDTO) {
+        const response = await this.delphiService.createOne(body);
+        return res.status(response.code).json(response);
+    }
+
+    @Post('/:id/end')
+    async endRound(@Res() res, @Param('id') id) {
+        const response = await this.delphiService.endRound(id);
         return res.status(response.code).json(response);
     }
 

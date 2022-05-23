@@ -128,4 +128,16 @@ export class ProjectService extends BaseService<ProjectDocument> {
             return generateInternalServerError(error);
         }
     }
+
+    async getByOrg(orgID: string) {
+        try {
+            const projects = await this.projectModel.find({
+                organization: orgID,
+            });
+
+            return generateSuccessResponse(projects);
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
 }
