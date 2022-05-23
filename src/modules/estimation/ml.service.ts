@@ -13,6 +13,7 @@ import { UseCaseComplexity } from '../project/subschemas/usecase';
 import { Estimation, EstimationTypeEnum } from './estimation.schema';
 import { Repo } from './repo.schema';
 import mongoose from 'mongoose';
+import { DelphiRound } from './delphiRound.schema';
 
 const PROD_FACTOR = 20;
 interface UAWType {
@@ -143,6 +144,9 @@ export class MLService {
         @InjectModel(Repo.name)
         private readonly repoModel: Model<Repo>,
 
+        @InjectModel(DelphiRound.name)
+        private readonly delphiModel: Model<DelphiRound>,
+
         private readonly projectService: ProjectService,
     ) {}
 
@@ -203,6 +207,34 @@ export class MLService {
                 value: effort,
                 projectID,
                 estimationType: EstimationTypeEnum.UCP,
+            });
+
+            return generateSuccessResponse(estimation);
+        } catch (error) {
+            return generateInternalServerError(error);
+        }
+    }
+
+    async delphi(projectID: string) {
+        try {
+            const rounds = await this.delphiModel
+                .find({ projectID })
+                .sort({ createdAt: -1 });
+
+            if (!rounds.length) {
+                return generateNotFoundError(
+                    'No rounds have been created for this project',
+                );
+            }
+
+            if (!rounds[0].hasEnded) {
+                return generateNotFoundError('All rounds must be ended first');
+            }
+
+            const estimation = await this.estimationModel.create({
+                value: rounds[0].value,
+                projectID,
+                estimationType: EstimationTypeEnum.DELPHI,
             });
 
             return generateSuccessResponse(estimation);

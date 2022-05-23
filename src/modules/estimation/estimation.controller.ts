@@ -27,6 +27,12 @@ export class EstimationController {
         return res.status(response.code).json(response);
     }
 
+    @Post('/:projectId/delphi')
+    async delphi(@Res() res, @Param('projectId') projectId) {
+        const response = await this.mlService.delphi(projectId);
+        return res.status(response.code).json(response);
+    }
+
     @Get('/:projectId/:estimationType')
     async projectEstimations(
         @Res() res,

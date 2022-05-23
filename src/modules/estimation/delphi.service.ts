@@ -32,10 +32,10 @@ export class DelphiService {
         }
     }
 
-    async findByProjectId(projectId: string) {
+    async findByProjectId(projectID: string) {
         try {
             const data = await this.delphiModel
-                .find({ projectId })
+                .find({ projectID })
                 .sort({ createdAt: 1 });
             return generateSuccessResponse(data);
         } catch (error) {
@@ -134,19 +134,24 @@ export class DelphiService {
                 );
             }
 
-            // if (round.contributions.length === 0) {
-            //     return generateResponse(
-            //         true,
-            //         HttpStatus.BAD_REQUEST,
-            //         'Atleast one contribution is required',
-            //         null,
-            //     );
-            // }
+            if (round.contributions.length === 0) {
+                return generateResponse(
+                    true,
+                    HttpStatus.BAD_REQUEST,
+                    'Atleast one contribution is required',
+                    null,
+                );
+            }
+
+            const value = round.contributions.reduce((acc, curr) => {
+                return acc + curr.value;
+            }, 0);
 
             const updatedRound = await this.delphiModel.findByIdAndUpdate(
                 id,
                 {
                     hasEnded: true,
+                    value: value / round.contributions.length,
                 },
                 { new: true },
             );

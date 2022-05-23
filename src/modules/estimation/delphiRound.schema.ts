@@ -29,6 +29,11 @@ export class DelphiRound {
         default: [],
     })
     contributions: Contribution[];
+
+    @Prop({
+        type: Number,
+    })
+    value: number;
 }
 
 export const DelphiRoundSchema = SchemaFactory.createForClass(DelphiRound);
