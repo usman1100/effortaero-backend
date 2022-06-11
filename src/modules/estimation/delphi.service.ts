@@ -47,7 +47,7 @@ export class DelphiService {
         try {
             const previousRound = await this.delphiModel
                 .find({
-                    projectId: body.projectID,
+                    projectID: body.projectID,
                 })
                 .sort({ createdAt: -1 });
 
