@@ -33,6 +33,12 @@ export class EstimationController {
         return res.status(response.code).json(response);
     }
 
+    @Post('/:projectId/ensemble')
+    async ensemble(@Res() res, @Param('projectId') projectId) {
+        const response = await this.mlService.ensemble(projectId);
+        return res.status(response.code).json(response);
+    }
+
     @Get('/:projectId/:estimationType')
     async projectEstimations(
         @Res() res,

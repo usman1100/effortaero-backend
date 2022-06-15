@@ -5,6 +5,7 @@ export enum EstimationTypeEnum {
     ML = 'ml',
     UCP = 'ucp',
     DELPHI = 'delphi',
+    ENSEMBLE = 'ensemble',
 }
 export interface EstimationInterface {
     _id: string;

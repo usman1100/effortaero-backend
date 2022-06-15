@@ -255,4 +255,72 @@ export class MLService {
             return generateInternalServerError(error);
         }
     }
+
+    async ensemble(projectID: string) {
+        try {
+            const project = await this.projectService.findById(projectID);
+            if (!project) {
+                return generateNotFoundError(
+                    'Project not found with id: ' + projectID,
+                );
+            }
+
+            const repos = await this.repoModel.find().lean();
+
+            if (!repos.length) {
+                return generateNotFoundError('Repo is not populated yet');
+            }
+
+            const mlEstimates = await this.estimationModel.find({
+                projectID,
+                estimationType: EstimationTypeEnum.ML,
+            });
+
+            if (mlEstimates.length === 0) {
+                return generateNotFoundError(
+                    'No ML estimations have been made for this project',
+                );
+            }
+
+            const ucpEstimates = await this.estimationModel.find({
+                projectID,
+                estimationType: EstimationTypeEnum.UCP,
+            });
+
+            if (ucpEstimates.length === 0) {
+                return generateNotFoundError(
+                    'No UCP estimations have been made for this project',
+                );
+            }
+
+            const delphiEstimates = await this.estimationModel.find({
+                projectID,
+                estimationType: EstimationTypeEnum.DELPHI,
+            });
+
+            if (delphiEstimates.length === 0) {
+                return generateNotFoundError(
+                    'No DELPHI estimations have been made for this project',
+                );
+            }
+
+            const average =
+                (mlEstimates[0].value +
+                    ucpEstimates[0].value +
+                    delphiEstimates[0].value) /
+                3;
+
+            const estimation = await this.estimationModel.create({
+                value: average,
+                projectID,
+                estimationType: EstimationTypeEnum.ENSEMBLE,
+            });
+
+            return generateSuccessResponse(estimation);
+
+            return generateSuccessResponse(repos.map((e) => dbItemToArray(e)));
+        } catch (error) {
+            console.log(error);
+        }
+    }
 }
